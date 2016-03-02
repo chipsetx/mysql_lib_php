@@ -5,7 +5,8 @@
 
         in the file you use it put
 	require("mysql_lib.php");
-
+	
+	mysql_check_line
 	mysql_get_line()
 	mysql_put_line()
 	mysql_update_line()
