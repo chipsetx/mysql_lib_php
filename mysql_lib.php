@@ -14,6 +14,25 @@
 
 
 */
+function mysql_check_line($servername, $username, $password, $dbname, $table, $id){
+	$conn = mysqli_connect($servername, $username, $password, $dbname);
+	// Check connection
+	if (!$conn) {
+	    die("Connection failed: " . mysqli_connect_error());
+	}
+
+	$sql="SELECT id FROM ".$table." WHERE id = '" . $id . "'";
+	$req = mysqli_query($conn,$sql) or exit(mysql_error());
+	if (mysqli_num_rows($req) == 1) {
+	     echo 'Ok';
+	     return 1;
+	}
+	else {
+	     return 0;
+	     echo 'Pas ok.';
+	}
+}
+
 
 //############### get line ###################
 function mysql_get_line($servername, $username, $password, $dbname, $table, $id, $champs ,$delimiteur){
@@ -42,12 +61,13 @@ function mysql_get_line($servername, $username, $password, $dbname, $table, $id,
                   else { $ligne=$ligne.$delimiteur.$row[$champs[$i]]; }
 		}	
 	    }
+	mysqli_close($conn);
  	return $ligne;
-	echo $ligne;
+	//echo $ligne;
 	} else {
 	    echo "0 results";
 	}
-	mysqli_close($conn);
+
 }
 
 //############### put line ###################
@@ -128,7 +148,37 @@ function mysql_delete_line($servername, $username, $password, $dbname,$id,$table
 	mysqli_close($conn);
 }
 
+//############### re order lines #############
+
+function re_order($servername, $username, $password, $dbname,$table,$id_effacer){
+
+$champs[1]="nom";
+$champs[2]="prenom";
+$champs[3]="statut";
+$delimiteur=" ##-## ";
+
+for($id=$id_effacer+1;$id<=10;$id++){
+$line=mysql_get_line($servername, $username, $password, $dbname, $table, $id, $champs, $delimiteur);
+
+$valeurs_premier=explode($delimiteur, $line);
+$id_moinsun=$id-1;
+$valeurs[2]=$valeurs_premier[0];
+$valeurs[3]=$valeurs_premier[1];
+$valeurs[4]=$valeurs_premier[2];
+print_r($valeurs);
+}
+$champ="nom";
+$valeur=$valeurs[2];
+mysql_update_line($servername, $username, $password, $dbname,$table,$id_moinsun,$champ,$valeur);
+/*
+mysql_delete_line($servername, $username, $password, $dbname,$id,$table)
+$champs=explode(" ", $line);
+$id=$id_prochain
+*/
+
+
 //############### get number of lines #############
+}
 
 function mysql_get_nb_max_id($servername, $username, $password, $dbname, $table){
 	// Create connection
