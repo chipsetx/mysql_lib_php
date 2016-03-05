@@ -6,6 +6,7 @@
         in the file you use it put
 	require("mysql_lib.php");
 	
+	mysql_search_motor()
 	mysql_check_line
 	mysql_get_line()
 	mysql_put_line()
@@ -13,8 +14,45 @@
 	mysql_delete_line()
 	mysql_get_nb_lines()
 
-
 */
+
+function mysql_search_motor($servername, $username, $password, $dbname,$champs, $delimiteur_lines,$delimiteur_vars, $table,$search){
+	$conn = mysqli_connect($servername, $username, $password, $dbname);
+	// Check connection
+	if (!$conn) {
+	    die("Connection failed: " . mysqli_connect_error());
+	}
+	$rec = htmlentities($search);
+	$nb_champs = count($champs);
+
+
+	for($i=1;$i<=$nb_champs;$i++){
+	if ($i==1) {$champs_tous=$champs[1]; }
+	else { $champs_tous=$champs_tous.','.$champs[$i]; }
+	}
+	$req = 'SELECT '. $champs_tous .' FROM '. $table .' WHERE ';
+       $mots = explode(' ',$rec);//En separre lexpression en mots cles
+        foreach($mots as $mot)
+        {
+                $req .= ' nom_video LIKE "%'.$mot.'%" OR';
+        }        
+	$req .= ' 1=0';
+	$req .= ' order by id asc';
+
+	$requete = mysqli_query($conn,$req);
+	while($dnn = mysqli_fetch_assoc($requete))
+	{
+        	
+		$lines=$lines.$delimiteur_lines.$dnn['id'].$delimiteur_vars.$dnn['nom_video'];
+               //echo $dnn['id']; 
+               //echo $dnn['nom_video']; 
+               
+	}
+	return $lines;
+
+
+}
+
 function mysql_check_line($servername, $username, $password, $dbname, $table, $id){
 	$conn = mysqli_connect($servername, $username, $password, $dbname);
 	// Check connection
